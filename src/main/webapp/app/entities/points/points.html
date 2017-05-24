@@ -1,8 +1,7 @@
 <div>
-    <h2 data-translate="21PointsApp.points.home.title">Points</h2>
     <jhi-alert></jhi-alert>
     <div class="container-fluid">
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-xs-4 no-padding-left">
                 <button class="btn btn-primary" ui-sref="points.new" >
                     <span class="glyphicon glyphicon-plus"></span>
@@ -26,6 +25,33 @@
                             </button>
                         </span>
                     </div>
+                </form>
+            </div>
+        </div> -->
+        <div class="row">
+            <div class="col-sm-7">
+                <h2 data-translate="21PointsApp.points.home.title">Points</h2>
+            </div>
+            <div class="col-sm-5 text-right p-n">
+                <form name="searchForm" class="form-inline">
+                    <div class="form-group m-n">
+                        <input type="search" class="form-control" ng-model="vm.searchQuery" id=
+                            "searchQuery"
+                               placeholder="{{'entity.action.search' | translate}}">
+                    </div>
+                    <button class="btn btn-info btn-sm" ng-click="vm.clear()" ng-if=
+                        "vm.currentSearch">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                    <button class="btn btn-info btn-sm btn-raised" ng-click=
+                        "vm.search(vm.searchQuery)"
+                            uib-tooltip="{{'entity.action.search' | translate}}">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                    <button class="btn btn-primary btn-sm btn-raised" ui-sref="points.new"
+                            uib-tooltip="{{'entity.action.new' | translate}}">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
                 </form>
             </div>
         </div>

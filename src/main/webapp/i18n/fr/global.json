@@ -92,7 +92,9 @@
             "delete": "Supprimer",
             "open": "Ouvrir",
             "save": "Sauvegarder",
-            "view": "Voir"
+            "view": "Voir",
+            "search": "Cherchez",
+            "new": "Neuveau"
         },
         "detail": {
             "field": "Champs",

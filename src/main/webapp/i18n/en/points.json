@@ -2,7 +2,7 @@
     "21PointsApp": {
         "points" : {
             "home": {
-                "title": "Points",
+                "title": "Daily Points",
                 "createLabel": "Create a new Points",
                 "createOrEditLabel": "Create or edit a Points",
                 "search": "Search for Points"
