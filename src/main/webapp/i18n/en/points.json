@@ -3,13 +3,13 @@
         "points" : {
             "home": {
                 "title": "Daily Points",
-                "createLabel": "Create a new Points",
-                "createOrEditLabel": "Create or edit a Points",
+                "createLabel": "Create Points",
+                "createOrEditLabel": "Create or edit Points",
                 "search": "Search for Points"
             },
-            "created": "A new Points is created with identifier {{ param }}",
-            "updated": "A Points is updated with identifier {{ param }}",
-            "deleted": "A Points is deleted with identifier {{ param }}",
+            "created": "Points created with identifier {{ param }}",
+            "updated": "Points updated with identifier {{ param }}",
+            "deleted": "Points deleted with identifier {{ param }}",
             "delete": {
                 "question": "Are you sure you want to delete Points {{ id }}?"
             },
@@ -17,9 +17,9 @@
                 "title": "Points"
             },
             "date": "Date",
-            "exercise": "Exercise",
-            "meals": "Meals",
-            "alcohol": "Alcohol",
+            "exercise": "Did you exercise?",
+            "meals": "Did you eat well?",
+            "alcohol": "Did you drink responsibly?",
             "notes": "Notes",
             "user": "User"
         }

@@ -30,22 +30,31 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label" data-translate="21PointsApp.points.exercise" for="field_exercise">Exercise</label>
-            <input type="number" class="form-control" name="exercise" id="field_exercise"
-                    ng-model="vm.points.exercise"
-                    />
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="vm.points.exercise" id="field_exercise" ng-true-value="1" ng-false-value="0">
+                    <span class="check"></span>
+                    <label data-translate="21PointsApp.points.exercise" for="field_exercise" class="control-label">Exercise</label>
+                </label>
+            </div>
         </div>
         <div class="form-group">
-            <label class="control-label" data-translate="21PointsApp.points.meals" for="field_meals">Meals</label>
-            <input type="number" class="form-control" name="meals" id="field_meals"
-                    ng-model="vm.points.meals"
-                    />
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="vm.points.meals" id="field_meals" ng-true-value="1" ng-false-value="0">
+                    <span class="check"></span>
+                    <label data-translate="21PointsApp.points.meals" for="field_meals" class="control-label">Meals</label>
+                </label>
+            </div>
         </div>
         <div class="form-group">
-            <label class="control-label" data-translate="21PointsApp.points.alcohol" for="field_alcohol">Alcohol</label>
-            <input type="number" class="form-control" name="alcohol" id="field_alcohol"
-                    ng-model="vm.points.alcohol"
-                    />
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="vm.points.alcohol" id="field_alcohol" ng-true-value="1" ng-false-value="0">
+                    <span class="check"></span>
+                    <label data-translate="21PointsApp.points.alcohol" for="field_alcohol" class="control-label">Alcohol</label>
+                </label>
+            </div>
         </div>
         <div class="form-group">
             <label class="control-label" data-translate="21PointsApp.points.notes" for="field_notes">Notes</label>
