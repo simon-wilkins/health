@@ -1,9 +1,9 @@
 package com.sentriz.health.service;
 
-import com.sentriz.health.domain.Points;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
+
+import com.sentriz.health.domain.Points;
 
 /**
  * Service Interface for managing Points.
@@ -20,7 +20,7 @@ public interface PointsService {
 
     /**
      *  Get all the points.
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
@@ -45,9 +45,11 @@ public interface PointsService {
      * Search for the points corresponding to the query.
      *
      *  @param query the query of the search
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
     Page<Points> search(String query, Pageable pageable);
+
+    Page<Points> findByUserIsCurrentUser(Pageable pageable);
 }

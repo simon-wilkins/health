@@ -1,21 +1,18 @@
 package com.sentriz.health.service.impl;
 
-import com.sentriz.health.service.PointsService;
-import com.sentriz.health.domain.Points;
-import com.sentriz.health.repository.PointsRepository;
-import com.sentriz.health.repository.search.PointsSearchRepository;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import com.sentriz.health.domain.Points;
+import com.sentriz.health.repository.PointsRepository;
+import com.sentriz.health.repository.search.PointsSearchRepository;
+import com.sentriz.health.service.PointsService;
 
 /**
  * Service Implementation for managing Points.
@@ -25,7 +22,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class PointsServiceImpl implements PointsService{
 
     private final Logger log = LoggerFactory.getLogger(PointsServiceImpl.class);
-    
+
     private final PointsRepository pointsRepository;
 
     private final PointsSearchRepository pointsSearchRepository;
@@ -51,7 +48,7 @@ public class PointsServiceImpl implements PointsService{
 
     /**
      *  Get all the points.
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
@@ -102,5 +99,11 @@ public class PointsServiceImpl implements PointsService{
         log.debug("Request to search for a page of Points for query {}", query);
         Page<Points> result = pointsSearchRepository.search(queryStringQuery(query), pageable);
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Points> findByUserIsCurrentUser(Pageable pageable) {
+        return pointsRepository.findByUserIsCurrentUser(pageable);
     }
 }

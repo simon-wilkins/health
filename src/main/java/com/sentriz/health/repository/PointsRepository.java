@@ -1,10 +1,11 @@
 package com.sentriz.health.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 import com.sentriz.health.domain.Points;
-
-import org.springframework.data.jpa.repository.*;
-
-import java.util.List;
 
 /**
  * Spring Data JPA repository for the Points entity.
@@ -13,6 +14,6 @@ import java.util.List;
 public interface PointsRepository extends JpaRepository<Points,Long> {
 
     @Query("select points from Points points where points.user.login = ?#{principal.username}")
-    List<Points> findByUserIsCurrentUser();
+    Page<Points> findByUserIsCurrentUser(Pageable pageable);
 
 }

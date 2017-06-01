@@ -1,12 +1,12 @@
 package com.sentriz.health.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import com.sentriz.health.domain.Points;
-import com.sentriz.health.service.PointsService;
-import com.sentriz.health.web.rest.util.HeaderUtil;
-import com.sentriz.health.web.rest.util.PaginationUtil;
-import io.swagger.annotations.ApiParam;
-import io.github.jhipster.web.util.ResponseUtil;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -14,17 +14,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import com.codahale.metrics.annotation.Timed;
+import com.sentriz.health.domain.Points;
+import com.sentriz.health.security.AuthoritiesConstants;
+import com.sentriz.health.security.SecurityUtils;
+import com.sentriz.health.service.PointsService;
+import com.sentriz.health.service.UserService;
+import com.sentriz.health.web.rest.util.HeaderUtil;
+import com.sentriz.health.web.rest.util.PaginationUtil;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiParam;
 
 /**
  * REST controller for managing Points.
@@ -36,11 +46,14 @@ public class PointsResource {
     private final Logger log = LoggerFactory.getLogger(PointsResource.class);
 
     private static final String ENTITY_NAME = "points";
-        
+
     private final PointsService pointsService;
 
-    public PointsResource(PointsService pointsService) {
+    private final UserService userService;
+
+    public PointsResource(PointsService pointsService, UserService userService) {
         this.pointsService = pointsService;
+        this.userService = userService;
     }
 
     /**
@@ -57,6 +70,10 @@ public class PointsResource {
         if (points.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new points cannot already have an ID")).body(null);
         }
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+        }
+        points.setUser(userService.getUserWithAuthorities());
         Points result = pointsService.save(points);
         return ResponseEntity.created(new URI("/api/points/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -95,7 +112,12 @@ public class PointsResource {
     @Timed
     public ResponseEntity<List<Points>> getAllPoints(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Points");
-        Page<Points> page = pointsService.findAll(pageable);
+        Page<Points> page;
+        if(SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)){
+            page = pointsService.findAll(pageable);
+        } else {
+            page = pointsService.findByUserIsCurrentUser(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/points");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -132,7 +154,7 @@ public class PointsResource {
      * SEARCH  /_search/points?query=:query : search for the points corresponding
      * to the query.
      *
-     * @param query the query of the points search 
+     * @param query the query of the points search
      * @param pageable the pagination information
      * @return the result of the search
      */

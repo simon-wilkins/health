@@ -1,12 +1,21 @@
 package com.sentriz.health.web.rest;
 
-import com.sentriz.health.Application;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
-import com.sentriz.health.domain.Points;
-import com.sentriz.health.repository.PointsRepository;
-import com.sentriz.health.service.PointsService;
-import com.sentriz.health.repository.search.PointsSearchRepository;
-import com.sentriz.health.web.rest.errors.ExceptionTranslator;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+
+import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,20 +26,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
-import javax.persistence.EntityManager;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.sentriz.health.Application;
+import com.sentriz.health.domain.Points;
+import com.sentriz.health.repository.PointsRepository;
+import com.sentriz.health.repository.search.PointsSearchRepository;
+import com.sentriz.health.service.PointsService;
+import com.sentriz.health.service.UserService;
+import com.sentriz.health.web.rest.errors.ExceptionTranslator;
 
 /**
  * Test class for the PointsResource REST controller.
@@ -63,6 +72,9 @@ public class PointsResourceIntTest {
     private PointsService pointsService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private PointsSearchRepository pointsSearchRepository;
 
     @Autowired
@@ -77,6 +89,9 @@ public class PointsResourceIntTest {
     @Autowired
     private EntityManager em;
 
+    @Autowired
+    private WebApplicationContext context;
+
     private MockMvc restPointsMockMvc;
 
     private Points points;
@@ -84,7 +99,7 @@ public class PointsResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        PointsResource pointsResource = new PointsResource(pointsService);
+        PointsResource pointsResource = new PointsResource(pointsService, userService);
         this.restPointsMockMvc = MockMvcBuilders.standaloneSetup(pointsResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -118,8 +133,15 @@ public class PointsResourceIntTest {
     public void createPoints() throws Exception {
         int databaseSizeBeforeCreate = pointsRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(SecurityMockMvcConfigurers.springSecurity())
+            .build();
+
         // Create the Points
         restPointsMockMvc.perform(post("/api/points")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(points)))
             .andExpect(status().isCreated());
@@ -182,8 +204,15 @@ public class PointsResourceIntTest {
         // Initialize the database
         pointsRepository.saveAndFlush(points);
 
+        // Create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(SecurityMockMvcConfigurers.springSecurity())
+            .build();
+
         // Get all the pointsList
-        restPointsMockMvc.perform(get("/api/points?sort=id,desc"))
+        restPointsMockMvc.perform(get("/api/points?sort=id,desc")
+                                    .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(points.getId().intValue())))
