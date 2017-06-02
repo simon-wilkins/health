@@ -1,29 +1,70 @@
 <div ng-cloak>
     <div class="row">
         <div class="col-md-4">
-            <span class="hipster img-responsive img-rounded"></span>
+            <span class="heart img-responsive img-rounded"></span>
         </div>
         <div class="col-md-8">
-            <h1 data-translate="home.title">Welcome, Java Hipster!</h1>
-            <p class="lead" data-translate="home.subtitle">This is your homepage</p>
+            <h1 data-translate="home.title">21 Points</h1>
+            <p class="lead" data-translate="home.subtitle">Track your health</p>
 
-            <a ui-sref="points.add" data-translate="home.points.add" class="btn btn-primary btn-raised">Add Some Points</a>
-
-            <div ng-switch="vm.isAuthenticated()">
-                <div class="alert alert-success" ng-switch-when="true" data-translate="home.logged.message" translate-values="{username: '{{vm.account.login}}'}">
-                    You are logged in as user "{{vm.account.login}}".
+            <div class="row">
+                <div class="col-md-6 col-xs-5">
+                    <h4 data-translate="home.points.overview" class="m-t-sm hidden-xs"
+                        data-translate-values="{date: '{{vm.pointsThisWeek.week | date: 'longDate'}}'}">
+                        Points for the week of {{vm.pointsThisWeek.week | date: 'longDate'}}:
+                    </h4>
+                    <h4 data-translate="main.points.thisWeekMobile" class="m-t-sm visible-xs">
+                        Points for {{pointsThisWeek.week | date: 'longDate'}}:
+                    </h4>
                 </div>
-
-                <div class="alert alert-warning" ng-switch-when="false" data-translate="global.messages.info.authenticated" translate-compile>
-                    If you want to <a class="alert-link" href="" ng-click="vm.login()">sign in</a>, you can try the default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user" and password="user").
-                </div>
-
-                <div class="alert alert-warning" ng-switch-when="false" data-translate="global.messages.info.register" translate-compile>
-                    You don't have an account yet? <a class="alert-link" ui-sref="register">Register a new account</a>
+                <div class="col-md-4 text-right">
+                    <a ui-sref="points.add" data-translate="home.points.add" class="btn btn-primary btn-raised m-n m-b-xs">Add Points</a>
                 </div>
             </div>
 
-            <p data-translate="home.question">
+            <!-- <div>
+                <h4 data-translate="home.points.overview">Overview</h4>
+                <a ui-sref="points.add" data-translate="home.points.add" class="btn btn-primary btn-raised">Add Some Points</a>
+            </div> -->
+
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="progress progress-lg" ng-if="vm.pointsThisWeek.points">
+                        <div class="progress-bar progress-bar-striped" role="progressbar"
+                             ng-class="{'progress-bar-success': vm.pointsThisWeek.points >= 21,
+                                                'progress-bar-danger': vm.pointsThisWeek.points < 10,
+                                                'progress-bar-warning': vm.pointsThisWeek.points > 10 && vm.pointsThisWeek.points < 21}"
+                             aria-valuenow="{{vm.pointsThisWeek.points}}"
+                             aria-valuemin="0" aria-valuemax="21" style="width: {{vm.pointsPercentage}}%">
+                                    <span ng-show="vm.pointsThisWeek.points">{{vm.pointsThisWeek.points}} / Goal: 10</span>
+                            <!-- <span class="sr-only">{{vm.pointsPercentage}} points this week</span> -->
+                        </div>
+                    </div>
+                    <div uib-alert type="info" ng-hide="vm.pointsThisWeek.points">
+                        No points yet this week, better get moving!
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10">
+                    <div ng-switch="vm.isAuthenticated()">
+                        <div class="alert alert-success" ng-switch-when="true" data-translate="home.logged.message" translate-values="{username: '{{vm.account.login}}'}">
+                            You are logged in as user "{{vm.account.login}}"
+                        </div>
+
+                        <!-- <div class="alert alert-warning" ng-switch-when="false" data-translate="global.messages.info.authenticated" translate-compile>
+                            If you want to <a class="alert-link" href="" ng-click="vm.login()">sign in</a>, you can try the default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user" and password="user").
+                        </div> -->
+
+                        <div class="alert alert-warning" ng-switch-when="false" data-translate="global.messages.info.register" translate-compile>
+                            You don't have an account yet? <a class="alert-link" ui-sref="register">Register a new account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <p data-translate="home.question">
                 If you have any question on JHipster:
             </p>
 
@@ -37,7 +78,7 @@
 
             <p>
              <span data-translate="home.like">If you like JHipster, don't forget to give us a star on </span>&nbsp;<a href="https://github.com/jhipster/generator-jhipster" target="_blank" data-translate="home.github">Github</a>!
-            </p>
+            </p> -->
         </div>
     </div>
 </div>

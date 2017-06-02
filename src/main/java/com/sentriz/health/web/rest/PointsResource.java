@@ -2,6 +2,8 @@ package com.sentriz.health.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +34,7 @@ import com.sentriz.health.service.PointsService;
 import com.sentriz.health.service.UserService;
 import com.sentriz.health.web.rest.util.HeaderUtil;
 import com.sentriz.health.web.rest.util.PaginationUtil;
+import com.sentriz.health.web.rest.vm.PointsPerWeek;
 
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.ApiParam;
@@ -120,6 +123,29 @@ public class PointsResource {
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/points");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * GET /points-this-week -> get all the points for the current week.
+     */
+    @GetMapping("/points-this-week")
+    @Timed
+    public ResponseEntity<PointsPerWeek> getPointsThisWeek() {
+        // Get current date
+        LocalDate now = LocalDate.now();
+        // Get first day of week
+        LocalDate startOfWeek = now.with(DayOfWeek.MONDAY);
+        // Get last day of week
+        LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
+        log.debug("Looking for points between: {} and {}", startOfWeek, endOfWeek);
+        List<Points> points = pointsService.findAllByDateBetween(startOfWeek, endOfWeek);
+        // filter by current user and sum the points
+        Integer numPoints = points.stream()
+            .filter(p -> p.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin()))
+            .mapToInt(p -> (p.getExercise() == null ? 0 : p.getExercise()) + (p.getMeals() == null ? 0 : p.getMeals()) +(p.getAlcohol() == null ? 0 : p.getAlcohol()))
+            .sum();
+        PointsPerWeek count = new PointsPerWeek(startOfWeek, numPoints);
+        return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
     /**

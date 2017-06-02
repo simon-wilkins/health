@@ -2,6 +2,8 @@ package com.sentriz.health.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -9,8 +11,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
@@ -35,6 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.sentriz.health.Application;
 import com.sentriz.health.domain.Points;
+import com.sentriz.health.domain.User;
 import com.sentriz.health.repository.PointsRepository;
 import com.sentriz.health.repository.search.PointsSearchRepository;
 import com.sentriz.health.service.PointsService;
@@ -106,6 +109,19 @@ public class PointsResourceIntTest {
             .setMessageConverters(jacksonMessageConverter).build();
     }
 
+    private void createPointsByWeek(LocalDate thisMonday, LocalDate lastMonday) {
+        User user = userService.getUserWithAuthoritiesByLogin("user").get();
+        // Create points in two separate weeks
+        points = new Points(thisMonday.plusDays(2), 1, 1, 1, user);
+        pointsRepository.saveAndFlush(points);
+        points = new Points(thisMonday.plusDays(3), 1, 1, 0, user);
+        pointsRepository.saveAndFlush(points);
+        points = new Points(lastMonday.plusDays(3), 0, 0, 1, user);
+        pointsRepository.saveAndFlush(points);
+        points = new Points(lastMonday.plusDays(4), 1, 1, 0, user);
+        pointsRepository.saveAndFlush(points);
+    }
+
     /**
      * Create an entity for this test.
      *
@@ -126,6 +142,36 @@ public class PointsResourceIntTest {
     public void initTest() {
         pointsSearchRepository.deleteAll();
         points = createEntity(em);
+    }
+
+    @Test
+    @Transactional
+    public void getPointsThisWeek() throws Exception {
+        LocalDate today = LocalDate.now();
+        LocalDate thisMonday = today.with(DayOfWeek.MONDAY);
+        LocalDate lastMonday = thisMonday.minusWeeks(1);
+        createPointsByWeek(thisMonday, lastMonday);
+
+        // create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(SecurityMockMvcConfigurers.springSecurity())
+            .build();
+
+        // Get all the points
+        restPointsMockMvc.perform(get("/api/points")
+            .with(user("user").roles("USER")))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", hasSize(4)));
+
+        // Get the points for this week only
+        restPointsMockMvc.perform(get("/api/points-this-week")
+            .with(user("user").roles("USER")))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.week").value(thisMonday.toString()))
+            .andExpect(jsonPath("$.points").value(5));
     }
 
     @Test

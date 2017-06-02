@@ -1,5 +1,8 @@
 package com.sentriz.health.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -52,4 +55,6 @@ public interface PointsService {
     Page<Points> search(String query, Pageable pageable);
 
     Page<Points> findByUserIsCurrentUser(Pageable pageable);
+
+    List<Points> findAllByDateBetween(LocalDate startOfWeek, LocalDate endOfWeek);
 }

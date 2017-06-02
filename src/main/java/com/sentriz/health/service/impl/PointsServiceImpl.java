@@ -2,6 +2,9 @@ package com.sentriz.health.service.impl;
 
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -105,5 +108,9 @@ public class PointsServiceImpl implements PointsService{
     @Transactional(readOnly = true)
     public Page<Points> findByUserIsCurrentUser(Pageable pageable) {
         return pointsRepository.findByUserIsCurrentUser(pageable);
+    }
+
+    @Override public List<Points> findAllByDateBetween(LocalDate startOfWeek, LocalDate endOfWeek) {
+        return pointsRepository.findAllByDateBetween(startOfWeek, endOfWeek);
     }
 }

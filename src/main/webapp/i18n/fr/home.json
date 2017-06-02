@@ -16,7 +16,8 @@
         "like": "Si vous aimez JHipster, donnez nous une étoile sur",
         "github": "GitHub ",
         "points":{
-            "add": "Addition du Points"
+            "add": "Addition du Points",
+            "overview" : "Points pour le semaine de {{date}}: "
         }
     }
 }
