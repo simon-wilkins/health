@@ -1,21 +1,21 @@
 package com.sentriz.health.service.impl;
 
-import com.sentriz.health.service.BloodPressureService;
-import com.sentriz.health.domain.BloodPressure;
-import com.sentriz.health.repository.BloodPressureRepository;
-import com.sentriz.health.repository.search.BloodPressureSearchRepository;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import com.sentriz.health.domain.BloodPressure;
+import com.sentriz.health.repository.BloodPressureRepository;
+import com.sentriz.health.repository.search.BloodPressureSearchRepository;
+import com.sentriz.health.service.BloodPressureService;
 
 /**
  * Service Implementation for managing BloodPressure.
@@ -25,7 +25,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class BloodPressureServiceImpl implements BloodPressureService{
 
     private final Logger log = LoggerFactory.getLogger(BloodPressureServiceImpl.class);
-    
+
     private final BloodPressureRepository bloodPressureRepository;
 
     private final BloodPressureSearchRepository bloodPressureSearchRepository;
@@ -51,7 +51,7 @@ public class BloodPressureServiceImpl implements BloodPressureService{
 
     /**
      *  Get all the bloodPressures.
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
@@ -102,5 +102,9 @@ public class BloodPressureServiceImpl implements BloodPressureService{
         log.debug("Request to search for a page of BloodPressures for query {}", query);
         Page<BloodPressure> result = bloodPressureSearchRepository.search(queryStringQuery(query), pageable);
         return result;
+    }
+
+    @Override public List<BloodPressure> findAllByDateTimeBetweenAndUserLoginOrderByDateTimeDesc(LocalDate firstDate, LocalDate secondDate, String login) {
+        return bloodPressureRepository.findAllByDateTimeBetweenAndUserLoginOrderByDateTimeDesc(firstDate, secondDate, login);
     }
 }

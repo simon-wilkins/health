@@ -1,14 +1,22 @@
 package com.sentriz.health.domain;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 /**
  * A BloodPressure.
@@ -41,6 +49,15 @@ public class BloodPressure implements Serializable {
 
     @ManyToOne
     private User user;
+
+    public BloodPressure() {}
+
+    public BloodPressure(LocalDate dateTime, Integer systolic, Integer diastolic, User user) {
+        this.dateTime = dateTime;
+        this.systolic = systolic;
+        this.diastolic = diastolic;
+        this.user = user;
+    }
 
     public Long getId() {
         return id;

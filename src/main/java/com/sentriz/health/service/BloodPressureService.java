@@ -1,9 +1,12 @@
 package com.sentriz.health.service;
 
-import com.sentriz.health.domain.BloodPressure;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
+
+import com.sentriz.health.domain.BloodPressure;
 
 /**
  * Service Interface for managing BloodPressure.
@@ -20,7 +23,7 @@ public interface BloodPressureService {
 
     /**
      *  Get all the bloodPressures.
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
@@ -45,9 +48,11 @@ public interface BloodPressureService {
      * Search for the bloodPressure corresponding to the query.
      *
      *  @param query the query of the search
-     *  
+     *
      *  @param pageable the pagination information
      *  @return the list of entities
      */
     Page<BloodPressure> search(String query, Pageable pageable);
+
+    List<BloodPressure> findAllByDateTimeBetweenAndUserLoginOrderByDateTimeDesc(LocalDate firstDate, LocalDate secondDate, String login);
 }
