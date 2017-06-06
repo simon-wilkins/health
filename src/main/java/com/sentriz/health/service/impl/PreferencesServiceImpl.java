@@ -1,19 +1,21 @@
 package com.sentriz.health.service.impl;
 
-import com.sentriz.health.service.PreferencesService;
-import com.sentriz.health.domain.Preferences;
-import com.sentriz.health.repository.PreferencesRepository;
-import com.sentriz.health.repository.search.PreferencesSearchRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.stereotype.Service;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.sentriz.health.domain.Preferences;
+import com.sentriz.health.repository.PreferencesRepository;
+import com.sentriz.health.repository.search.PreferencesSearchRepository;
+import com.sentriz.health.service.PreferencesService;
 
 /**
  * Service Implementation for managing Preferences.
@@ -23,7 +25,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class PreferencesServiceImpl implements PreferencesService{
 
     private final Logger log = LoggerFactory.getLogger(PreferencesServiceImpl.class);
-    
+
     private final PreferencesRepository preferencesRepository;
 
     private final PreferencesSearchRepository preferencesSearchRepository;
@@ -49,7 +51,7 @@ public class PreferencesServiceImpl implements PreferencesService{
 
     /**
      *  Get all the preferences.
-     *  
+     *
      *  @return the list of entities
      */
     @Override
@@ -100,5 +102,9 @@ public class PreferencesServiceImpl implements PreferencesService{
         return StreamSupport
             .stream(preferencesSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
+    }
+
+    @Override public Optional<Preferences> findOneByUserLogin(String login) {
+        return preferencesRepository.findOneByUserLogin(login);
     }
 }

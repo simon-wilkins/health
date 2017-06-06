@@ -25,6 +25,7 @@
                 translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate,$translatePartialLoader) {
                     $translatePartialLoader.addPart('home');
                     $translatePartialLoader.addPart('points');
+                    $translatePartialLoader.addPart('preferences');
                     return $translate.refresh();
                 }]
             }
@@ -56,6 +57,31 @@
                     }
                 }).result.then(function() {
                     $state.go('home', null, { reload: true});
+                }, function() {
+                    $state.go('home');
+                });
+            }]
+        })
+        .state('preferences.add', {
+            parent: 'home',
+            url: 'add/preferences',
+            data: {
+                authorities: ['ROLE_USER']
+            },
+            onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
+                $uibModal.open({
+                    templateUrl: 'app/entities/preferences/preferences-dialog.html',
+                    controller: 'PreferencesDialogController',
+                    controllerAs: 'vm',
+                    backdrop: 'static',
+                    size: 'lg',
+                    resolve: {
+                        entity: ['Preferences', function (Preferences) {
+                            return Preferences.user().$promise;
+                        }]
+                    }
+                }).result.then(function() {
+                    $state.go('home', null, { reload: true });
                 }, function() {
                     $state.go('home');
                 });
