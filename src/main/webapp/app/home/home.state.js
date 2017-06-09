@@ -26,6 +26,7 @@
                     $translatePartialLoader.addPart('home');
                     $translatePartialLoader.addPart('points');
                     $translatePartialLoader.addPart('preferences');
+                    $translatePartialLoader.addPart('bloodPressure');
                     return $translate.refresh();
                 }]
             }

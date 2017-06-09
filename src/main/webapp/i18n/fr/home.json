@@ -18,6 +18,9 @@
         "points":{
             "add": "Addition du Points",
             "overview" : "Points pour le semaine de {{date}}: "
-        }
+        },
+        "bloodPressure": "Sang Pressurez:",
+        "bloodPressureMobile": "SP:",
+        "weight": "Weightez:"
     }
 }

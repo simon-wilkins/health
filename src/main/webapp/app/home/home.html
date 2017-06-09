@@ -46,6 +46,26 @@
                 </div>
             </div>
 
+            <div class="row m-t-sm">
+                <div class="col-md-6 col-xs-3 text-nowrap">
+                    <h4 class="m-t-md hidden-xs" data-translate="home.bloodPressure">Blood Pressure:</h4>
+                    <h4 class="m-t-md visible-xs" data-translate="home.bloodPressureMobile">BP:</h4>
+                </div>
+                <div class="col-md-4 text-right">
+                    <a ui-sref="blood-pressure.add" class="btn btn-default btn-sm btn-raised">Add Blood Pressure</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <span ng-if="vm.bpReadings.readings.length">
+                        <nvd3 options="vm.bpOptions" data="vm.bpData" class="with-3d-shadow with-transitions"></nvd3>
+                    </span>
+                    <span ng-if="!vm.bpReadings.readings.length">
+                        <div uib-alert type="info">No blood pressure readings found.</div>
+                    </span>
+                </div>
+            </div>
+
             <div class="row">
                 <p class="m-t-md col-md-10">
                     <a ui-sref="preferences.add" class="pull-right">Edit Preferences</a>
