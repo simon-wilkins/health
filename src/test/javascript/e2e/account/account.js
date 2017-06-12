@@ -40,7 +40,7 @@ describe('account', function () {
         element(by.css('button[type=submit]')).click();
 
         const expect2 = /home.logged.message/;
-        element.all(by.css('.alert-success')).getAttribute('data-translate').then((value) => {
+        element.all(by.css('.logged-in')).getAttribute('data-translate').then((value) => {
             expect(value).toMatch(expect2);
         });
     });

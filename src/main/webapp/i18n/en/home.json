@@ -17,7 +17,7 @@
         "github": "GitHub",
         "points":{
             "add": "Add Points",
-            "overview" : "Points for the week of {{date}}:"
+            "thisWeek" : "Points for the week of {{date}}:"
         },
         "bloodPressure": "Blood Pressure:",
         "bloodPressureMobile": "BP:",
